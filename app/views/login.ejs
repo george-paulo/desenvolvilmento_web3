@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <%- include('/home/node/app/views/cabecalho.ejs') %>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <div id="resposta"></div>
+        <label>
+            <span>Nome</span>
+            <input name="nome" required>
+        </label>
+        <label>
+            <span>Senha</span>
+            <input name="senha" type="password" required>
+        </label>
+        <button type="submit">Ok</button>
+    </form>
+    <script>
+        async function login() {
+            let nome = document.querySelector('[name=nome]').value;
+            let senha = document.querySelector('[name=senha]').value;
+            let divResposta = document.querySelector('#resposta');
+
+            try {
+                let dados = new URLSearchParams({ nome, senha });
+                let resposta = await fetch('/logar', {
+                    method: 'post',
+                    body: dados
+                });
+
+                let json = await resposta.json();
+
+                if (resposta.ok) {
+                    sessionStorage.setItem('token', json.token);
+                    window.location.href = '/index'; // Redirecionamento para a página inicial após login
+                } else {
+                    divResposta.innerText = json.mensagem || 'Erro ao fazer login';
+                }
+            } catch (error) {
+                console.error('Erro ao realizar login:', error);
+                divResposta.innerText = 'Erro ao conectar-se ao servidor';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('loginForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                login();
+            });
+        });
+    </script>
+</body>
+</html>

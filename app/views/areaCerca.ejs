@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <%- include('/home/node/app/views/cabecalho.ejs') %>
+    <h1>Cercas!</h1>
+    <p>Calcule a Área de uma cerca em forma de triacontagono. Se a Área for maior que 200 metros quadrados, É uma cerca grande. Se for menor que 200 metros quadrados, É uma cerca pequena.</p>
+    <p>Olá, <%= nome %>. Seu decágono tem <%= lado %> metros de lado. A  área dele é <%= area() %> metros quadrados.</p>
+
+    <%
+    if (grande_pequena()) {
+    %>
+        <p>Grande</p>
+    <%
+    }
+    else {
+    %>
+        <p>Pequena</p>
+    <%
+    }
+    %>
+
+</body>
+</html>
