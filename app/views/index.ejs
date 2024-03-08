@@ -1,65 +1,21 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Inicial</title>
-    <script src="/_js/areaCerca.js"></script>
-    <style>
-       .padrao {
-            color: green;
-        }
-        .npadrao {
-            color: red;
-        }
-        #logo {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 300px;
-        }
-    </style>
 </head>
 <body>
     <%- include('/home/node/app/views/cabecalho.ejs') %>
-        <img id="logo" src="/_img/logo.png" alt="Logo">
-        <h1>Página Incial</h1>
-        <p>Calcule a Área de uma cerca em forma de triacontagono. Se a Área for maior que 200 metros quadrados, É uma
-            cerca grande. Se for menor que 200 metros quadrados, É uma cerca pequena.</p>
-        <h2>Digite abaixo os dados:</h2>
-        <form method="post" onSubmit="event.preventDefault(); calcularArea();">
-            <div id="resposta"></div>
-            <label>
-                <span>Nome</span>
-                <input name="nome">
-            </label>
-            <label>
-                <span>Lado</span>
-                <input name="lado">
-            </label>
-            <label>
-                <button>Calcular</button>
-            </label>
-        </form>
-        <button onclick="listar();">Listar</button>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Lado</th>
-                <th></th>
-            </tr>
-            <tbody id="triacontagono">
-                <tr>
-                    <td>Teste</td>
-                    <td>Cerca</td>
-                    <td>#1</td>
-                    <td>
-                        <button onclick="editar(1);">Editar</button>
-                        <button onclick="apagar(1);">Apagar</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </body>
-    </html>
+    <h1>Página Inicial</h1>
+    <p>Calcule a Área de uma cerca em forma de triacontagono. Se a Área for maior que 200 metros quadrados, É uma cerca grande. Se for menor que 200 metros quadrados, É uma cerca pequena.</p>
+    <h2>Digite abaixo os dados:</h2>
+    <form action="/resposta" method="get">
+        <label for="nome">Nome:</label><br>
+        <input type="text" id="nome" name="nome"><br>
+        <label for="lado">Lado:</label><br>
+        <input type="number" id="lado" name="lado"><br>
+        <label for="id">ID:</label><br>
+        <input type="text" id="id" name="id"><br>
+        <input type="submit" value="Calcular">
+    </form>
+</body>
+</html>
