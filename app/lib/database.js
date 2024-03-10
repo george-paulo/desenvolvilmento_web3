@@ -23,13 +23,9 @@ module.exports = async function() {
       }
     );
 
-    sequelize.authenticate()
-      .then(() => {
-        console.log('Conexão com o banco de dados estabelecida com sucesso.');
-      })
-      .catch(err => {
-        console.error('Não foi possível conectar ao banco de dados:', err);
-      });
+    await sequelize.authenticate();
+
+    console.log('Conexão com o banco de dados estabelecida com sucesso.');
 
     return sequelize;
 

@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const getAdmin = require('../models/Admin');
 const getSequelize = require('../lib/database');
 const { generateToken } = require('../utils/jwt');
@@ -5,33 +6,42 @@ const { generateToken } = require('../utils/jwt');
 class AdminController {
     constructor() {
         this.Admin = null;
-        getSequelize().then((sequelize) => {
-            getAdmin(sequelize).then((model) => {
-                this.Admin = model;
-            });
-        });
+        this.initPromise = this.init();
     }
-    
-    async login(req, res) {
+
+    async init() {
+        const sequelize = await getSequelize();
+        this.Admin = await getAdmin(sequelize);
+        await this.Admin.sync();
+    }
+
+    login(req, res) {
         const { nome, senha } = req.body;
-
-        // Verificar se o administrador existe
-        const admin = await this.Admin.findOne({ where: { nome } });
-        if (!admin) {
-            return res.status(401).json({ error: 'Usuário Não Existente' });
-        }
-
-        // Verificar se a senha está correta
-        const isPasswordValid = admin.validPassword(senha);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Senha Inválida' });
-        }
-
-        // Gerar um token com as informações do administrador
-        const token = generateToken({ id: admin.id, nome: admin.nome });
-
-        // Retornar o token na resposta
-        res.json({ token });
+    
+        return this.Admin.findOne({ where: { nome: nome } })
+            .then(admin => {
+                if (!admin) {
+                    return res.status(400).json({ error: 'Administrator não existe' });
+                } else {
+                    return bcrypt.compare(senha, admin.senha)
+                        .then(isMatch => {
+                            if (isMatch) {
+                                const token = generateToken({ id: admin.id });
+                                return res.json({ token });
+                            } else {
+                                return res.status(400).json({ error: 'Senha Inválida' });
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            return res.status(500).json({ error: 'Erro interno do servidor' });
+                        });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).json({ error: 'Erro interno do servidor' });
+            });
     }
 
     showLoginForm(req, res) {
@@ -40,8 +50,11 @@ class AdminController {
 
     async create(req, res) {
         const { nome, senha } = req.body;
-        const admin = await this.Admin.create({ nome, senha });
-        res.redirect('/admins');
+        const hashedPassword = await bcrypt.hash(senha, 10);
+        const admin = await this.Admin.create({ nome, senha: hashedPassword });
+        if (res && typeof res.redirect === 'function') {
+            res.redirect('/admins');
+        }
     }
 
     async list(req, res) {
@@ -51,7 +64,8 @@ class AdminController {
 
     async update(req, res) {
         const { id, nome, senha } = req.body;
-        await this.Admin.update({ nome, senha }, { where: { id } });
+        const hashedPassword = await bcrypt.hash(senha, 10);
+        await this.Admin.update({ nome, senha: hashedPassword }, { where: { id } });
         res.redirect('/admin');
     }
 
@@ -68,4 +82,7 @@ class AdminController {
     }
 }
 
-module.exports = AdminController;
+module.exports = () => {
+    const controller = new AdminController();
+    return controller.initPromise.then(() => controller);
+};

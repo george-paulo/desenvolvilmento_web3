@@ -1,17 +1,100 @@
 <% if (messages.error) { %> 
-  <p><%= messages.error %></p> 
+    <p><%= messages.error %></p> 
 <% } %>
+<%- include('/home/node/app/views/cabecalho.ejs') %>
 
-<form action="/admin/login" method="post">
-  <div>
-      <label for="nome">Nome:</label>
-      <input type="text" id="nome" name="nome" required>
-  </div>
-  <div>
-      <label for="senha">Senha:</label>
-      <input type="password" id="senha" name="senha" required>
-  </div>
-  <div>
-      <input type="submit" value="Login">
-  </div>
+<form id="loginForm">
+    <div>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" pattern=".{4,}" title="Nome deve ter pelo menos 4 caracteres" required>
+    </div>
+    <div>
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" pattern=".{3,}" title="Senha deve ter pelo menos 3 caracteres" required>
+    </div>
+    <div>
+        <input type="submit" value="Login">
+    </div>
 </form>
+
+<!-- Elemento para exibir os dados -->
+<pre id="data"></pre>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById('nome').value;
+    const senha = document.getElementById('senha').value;
+
+    fetch('/admin/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            nome: nome,
+            senha: senha,
+        }),
+    })
+    .then(response => {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+            return response.json();
+        } else {
+            return response.text();
+        }
+    })
+    .then(data => {
+    if (typeof data === 'object' && data.token) {
+        localStorage.setItem('token', data.token);
+        window.location.href = '/';
+
+        const rotas = ['/cercas', '/admin', '/admins'];
+        const promessasFetch = rotas.map(rota => {
+            return fetch(rota, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                },
+            })
+            .then(resposta => {
+                const contentType = resposta.headers.get('content-type');
+                if (contentType && contentType.indexOf('application/json') !== -1) {
+                    return resposta.json();
+                } else {
+                    return resposta.text();
+                }
+            })
+            .then(data => {
+                if (typeof data === 'object') {
+                    // Exibe os dados em um elemento HTML
+                    const elementoData = document.getElementById('data');
+                    elementoData.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    console.error('Erro:', data);
+                }
+            })
+            .catch(erro => {
+                console.error('Erro:', erro);
+            });
+        });
+
+        Promise.all(promessasFetch)
+        .then(() => {
+            console.log('Todas as requisições fetch foram concluídas');
+        })
+        .catch(erro => {
+            console.error('Erro:', erro);
+        });
+    } else {
+        console.error('Erro:', data);
+    }
+})
+.catch(erro => {
+    console.error('Erro:', erro);
+});
+
+});
+</script>

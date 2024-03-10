@@ -5,12 +5,13 @@ const router = require('./routes/index');
 const session = require('express-session');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
+const passport = require('./controllers/auth'); // Importe auth.js em vez de passport diretamente
 
 require('dotenv').config();
 
 app.use(methodOverride('_method'));
 app.use(session({
-    secret: 'sua chave secreta',
+    secret: process.env.SEGREDO_JWT,
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 60000 }
@@ -31,9 +32,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-    console.log(`[${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}] ${req.method} to ${req.url}`);
+    console.log(`[${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}] ${req.method} para ${req.url}`);
     next();
 });
+
+app.use(passport.initialize());
 
 app.use('/', router);
 

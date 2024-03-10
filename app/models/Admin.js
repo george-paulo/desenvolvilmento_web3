@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
 
-module.exports = async (sequelize) => {
+module.exports = (sequelize) => {
     const Admin = sequelize.define('Admin', {
         nome: {
             type: DataTypes.STRING,
@@ -9,11 +9,7 @@ module.exports = async (sequelize) => {
         },
         senha: {
             type: DataTypes.STRING,
-            allowNull: false,
-            set(value) {
-                const hash = bcrypt.hashSync(value, 10);
-                this.setDataValue('senha', hash);
-            }
+            allowNull: false
         }
     }, {
         hooks: {
@@ -29,10 +25,10 @@ module.exports = async (sequelize) => {
     });
 
     Admin.prototype.validPassword = function(password) {
-        return bcrypt.compareSync(password, this.senha);
+        const isPasswordValid = bcrypt.compareSync(password, this.senha);
+        console.log(`Resultado da comparação de senha: ${isPasswordValid}`);
+        return isPasswordValid;
     };
-
-    await Admin.sync();
-
+    
     return Admin;
 };
