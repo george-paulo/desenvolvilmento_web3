@@ -2,7 +2,6 @@ const getAdmin = require('../models/Admin');
 const getSequelize = require('../lib/database');
 const { generateToken } = require('../utils/jwt');
 
-
 class AdminController {
     constructor() {
         this.Admin = null;
@@ -13,19 +12,31 @@ class AdminController {
         });
     }
     
-async login(req, res) {
-    
-    const token = generateToken({ id: admin.id, nome: admin.nome });
-    const originalUrl = req.session && req.session.originalUrl ? req.session.originalUrl : '/admin';
-    if (req.session) {
-        delete req.session.originalUrl;
+    async login(req, res) {
+        const { nome, senha } = req.body;
+
+        // Verificar se o administrador existe
+        const admin = await this.Admin.findOne({ where: { nome } });
+        if (!admin) {
+            return res.status(401).json({ error: 'Usuário Não Existente' });
+        }
+
+        // Verificar se a senha está correta
+        const isPasswordValid = admin.validPassword(senha);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Senha Inválida' });
+        }
+
+        // Gerar um token com as informações do administrador
+        const token = generateToken({ id: admin.id, nome: admin.nome });
+
+        // Retornar o token na resposta
+        res.json({ token });
     }
-    res.redirect(originalUrl);
-}
- 
+
     showLoginForm(req, res) {
-    res.render('admin/login', { messages: req.flash() });
-}
+        res.render('login', { messages: req.flash() });
+    }
 
     async create(req, res) {
         const { nome, senha } = req.body;

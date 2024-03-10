@@ -1,14 +1,13 @@
-// utils/jwt.js
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = 'your-secret-key'; // Substitua por sua própria chave secreta
+const secret = process.env.SEGREDO_JWT;
 
-function generateToken(payload) {
-    return jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
+function generateToken(user) {
+    return jwt.sign({ id: user.id, nome: user.nome }, secret, { expiresIn: '1h' });
 }
 
 function verifyToken(token) {
     try {
-        return jwt.verify(token, SECRET_KEY);
+        return jwt.verify(token, secret);
     } catch (e) {
         return null;
     }

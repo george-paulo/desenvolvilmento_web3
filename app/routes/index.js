@@ -15,9 +15,9 @@ router.get('/cercas/editar/:id', auth, (req, res) => {
     cercaController.editar(req, res);
 });
 
-router.get('/admin', auth, (req, res) => adminController.list(req, res));
 router.post('/cercas', auth, (req, res) => cercaController.create(req, res));
 router.get('/cercas', auth, (req, res) => cercaController.list(req, res));
+router.get('/admin', auth, (req, res) => adminController.list(req, res));
 router.get('/admin/create', auth, (req, res) => res.render('criar_admin'));
 router.get('/admin/login', (req, res) => adminController.showLoginForm(req, res));
 router.post('/admin/login', (req, res) => adminController.login(req, res));
