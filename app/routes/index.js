@@ -2,7 +2,7 @@ const SobreController = require('../controllers/SobreController');
 const express = require('express');
 const router = express.Router();
 const Cerca = require('../lib/Cerca');
-
+//consertado
 const sobreController = new SobreController();
 
 router.get('/', (req, res) => res.render('index'));
