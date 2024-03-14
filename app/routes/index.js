@@ -14,7 +14,6 @@ router.get('/cercas/editar/:id', (req, res) => {
     cercaController.editar(req, res);
 });
 
-// Corrigido: substituído app.get por router.get
 router.get('/admin', (req, res) => {
     const messages = req.flash();
     res.render('admins', { messages }); // Alterado 'admin' para 'admins'
