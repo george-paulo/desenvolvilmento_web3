@@ -1,4 +1,3 @@
-// controllers/AdminController.js
 const getAdmin = require('../models/Admin');
 const getSequelize = require('../lib/database');
 
