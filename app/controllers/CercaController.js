@@ -14,11 +14,11 @@ class CercaController {
         const { nome, lado } = req.body;
         const cerca = await this.Cerca.create({ nome, lado });
 
-        // Calcular a área da cerca
+       
         const cercaObj = new Cerca(nome, lado);
         const area = cercaObj.area();
 
-        // Renderizar a view resposta.ejs com a área da cerca
+       
         res.render('resposta', { area });
     }
 
@@ -26,7 +26,7 @@ class CercaController {
         console.log('Rota /cercas chamada');
         const cercas = await this.Cerca.findAll();
 
-        // Calcular a área para cada cerca e adicionar ao objeto
+        
         cercas.forEach(cerca => {
             const cercaObj = new Cerca(cerca.nome, cerca.lado);
             cerca.area = cercaObj.area();
