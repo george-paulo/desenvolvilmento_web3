@@ -15,7 +15,7 @@ module.exports = async function() {
       }
   }, {});
 
-  // Cria as tabelas no banco de dados
+
   await sequelize.sync();
 
   return Cerca;
