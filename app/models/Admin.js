@@ -13,7 +13,7 @@ module.exports = async (sequelize) => {
         }
     });
 
-    // Aguarda a sincronização do modelo com o banco de dados
+
     await Admin.sync();
 
     return Admin;
