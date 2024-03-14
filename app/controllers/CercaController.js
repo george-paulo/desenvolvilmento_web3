@@ -1,4 +1,3 @@
-// CercaController.js
 const getCerca = require('../models/Cerca');
 const Cerca = require('../lib/Cerca'); // Adicione esta linha
 
