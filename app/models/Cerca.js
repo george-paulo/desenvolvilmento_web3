@@ -1,4 +1,3 @@
-// Cerca.js
 const { DataTypes } = require('sequelize');
 const getSequelize = require('../lib/database');
 
