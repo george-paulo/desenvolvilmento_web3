@@ -8,7 +8,7 @@ const methodOverride = require('method-override');
 
 app.use(methodOverride('_method'));
 app.use(session({
-    secret: 'sua chave secreta',
+    secret: process.env.SEGREDO_JWT,
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 60000 }
